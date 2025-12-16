@@ -22,6 +22,7 @@ export interface AstronautSprite {
 const ORBIT_SPEED = 1
 const ASTRONAUT_HEIGHT = 36 // px
 const ASTRONAUT_WIDTH = 18 // px
+const ASTRONAUT_SIZE_SCALE = 1
 const ASTRONAUT_SPRITE_URL = '/astronauts/assets/astronaut.png'
 // TODO: Different sprite for each space station.
 const CRAFTS: { [key: string]: string } = {
@@ -38,8 +39,8 @@ export async function createAstronaut({ craft }: Astronaut): Promise<AstronautSp
 
     const sprite = new Sprite(texture)
     sprite.anchor.set(0.5)
-    sprite.height = ASTRONAUT_HEIGHT * 1.25
-    sprite.width = ASTRONAUT_WIDTH * 1.25
+    sprite.height = ASTRONAUT_HEIGHT * ASTRONAUT_SIZE_SCALE
+    sprite.width = ASTRONAUT_WIDTH * ASTRONAUT_SIZE_SCALE
     sprite.zIndex = 400
     sprite.x = pos.x
     sprite.y = pos.y
