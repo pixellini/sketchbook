@@ -6,7 +6,7 @@ A collection of creative coding experiments, web animations, and interactive exp
 
 ## Sketches
 
-### <img src="./sketches/astronauts-in-space/public/assets/favicon.png" width="20" height="20" align="center"> [Astronauts In Space](https://fun.pixellini.com/astronauts)
+### <img src="./sketches/astronauts-in-space/public/assets/favicon.png" width="20" height="20" style="vertical-align: middle;"> [Astronauts In Space](https://fun.pixellini.com/astronauts)
 An aesthetic visualisation of astronauts currently in space, floating gracefully around Earth with smooth parallax effects. [Read more →](./sketches/astronauts-in-space/README.md)
 
 ![Deno](https://img.shields.io/badge/Deno-000000?style=flat-square&logo=deno&logoColor=white) 
