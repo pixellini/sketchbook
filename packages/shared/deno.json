@@ -1,0 +1,6 @@
+{
+    "name": "@pixellini/shared",
+    "exports": {
+        "./src/index.ts": "./src/index.ts"
+    }
+}

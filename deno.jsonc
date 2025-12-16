@@ -1,0 +1,13 @@
+{
+    // Deno workspace configuration
+    "workspace": [
+        "./packages/*",
+        "./sketches/*"
+    ],
+    "nodeModulesDir": "auto",
+    "tasks": {
+        "fmt": "deno fmt",
+        "lint": "deno lint",
+        "check": "deno check packages/shared/src/index.ts"
+    }
+}
