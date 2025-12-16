@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "lib": ["dom", "dom.iterable", "es2020"]
+    },
+    "tasks": {
+        "dev": "deno run -A --node-modules-dir=auto npm:vite",
+        "build": "deno run -A --node-modules-dir=auto npm:vite build",
+        "serve": "deno run -A --node-modules-dir=auto npm:vite preview",
+        "lint": "deno lint"
+    },
+    "lint": {
+        "include": ["src/"],
+        "rules": {
+            "exclude": ["no-unused-vars", "no-explicit-any"]
+        }
+    }
+}

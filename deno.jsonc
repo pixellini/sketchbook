@@ -1,5 +1,4 @@
 {
-    // Deno workspace configuration
     "workspace": [
         "./packages/*",
         "./sketches/*"
@@ -9,5 +8,18 @@
         "fmt": "deno fmt",
         "lint": "deno lint",
         "check": "deno check packages/shared/src/index.ts"
+    },
+    "imports": {
+        "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.5",
+        "gsap": "npm:gsap@^3.13.0",
+        "pixi.js": "npm:pixi.js@^8.8.1",
+        "vite": "npm:vite@^6.2.0",
+    },
+    "fmt": {
+        "useTabs": false,
+        "indentWidth": 4,
+        "semiColons": false,
+        "singleQuote": true,
+        "proseWrap": "preserve"
     }
 }
