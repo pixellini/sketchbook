@@ -1,6 +1,6 @@
 import { Assets, Sprite, Text, Container } from 'pixi.js'
 import { gsap } from 'gsap'
-import { PADDING_500, PADDING_100, FONT_XL, FONT_LG } from '@pixellini/design'
+import { PADDING_500, PADDING_100, FONT_XL, FONT_LG, PADDING_200 } from '@pixellini/design'
 import { SPACE_STATIONS } from '../constants/shared.ts'
 import { type Astronaut } from './astronaut.ts'
 
@@ -62,21 +62,33 @@ export async function createMissionPatch(astronaut: Astronaut): Promise<MissionP
     container.alpha = 0
 
     const basePos = container.x
-    const enterPos = container.x - PADDING_100
-
+    const enterPos = container.x - PADDING_200
+    
+    const tl = gsap.timeline()
     function show() {
-        gsap.fromTo(container, {
+        const startLabel = 'start'
+        tl.fromTo(container, {
             alpha: 0,
             x: enterPos
         }, {
             alpha: 1,
             x: basePos,
-            ease: 'power1.inOut',
+            ease: 'power2.out',
             duration: MISSION_PATCH_FADE_DURATION,
-        })
+        }, startLabel)
+        .fromTo(container, {
+            y: container.y - PADDING_100,
+        }, {
+            y: container.y + PADDING_100,
+            ease: 'power1.inOut',
+            yoyo: true,
+            repeat: -1,
+            duration: 2
+        }, startLabel)
     }
 
     async function destroy() {
+        tl.kill()
         await gsap.fromTo(container, {
             alpha: 1,
             x: basePos

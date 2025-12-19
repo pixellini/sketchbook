@@ -21,20 +21,17 @@ export interface AstronautGraphic {
     animate: () => void
 }
 
-const ORBIT_SPEED = 1 // 2 minutes for one orbit if the orbit speed is 1
-const ORBIT_SIZE = 200
-const ASTRONAUT_HEIGHT = 36 // px
-const ASTRONAUT_WIDTH = 18 // px
-const ASTRONAUT_SIZE_SCALE = 1
-const ASTRONAUT_SPRITE_URL_ISS = '/astronauts/assets/astronaut.png'
-// TODO: Different sprite for each space station.
-const CRAFTS: { [key: string]: string } = {
-    'ISS': ASTRONAUT_SPRITE_URL_ISS,
-    'Tiangong': ASTRONAUT_SPRITE_URL_ISS
+const ORBIT_SPEED = 1 // 2 minutes for one orbit
+const ORBIT_SIZE = 225
+const ASTRONAUT_HEIGHT = 64 // px
+const ASTRONAUT_WIDTH = 38 // px
+const ASTRONAUT_SUIT: { [key: string]: string } = {
+    ISS: '/astronauts/assets/astronaut-iss.png',
+    Tiangong: '/astronauts/assets/astronaut-tiangong.png'
 }
 
 async function getTexture(craft: string) {
-    const astronautImage = CRAFTS[craft] || ASTRONAUT_SPRITE_URL_ISS
+    const astronautImage = ASTRONAUT_SUIT[craft] || ASTRONAUT_SUIT.ISS
     return await Assets.load(astronautImage)
 }
 
@@ -43,14 +40,15 @@ async function createAstronautGraphic(astronaut: Astronaut) {
     const pos = createCenterPosition()
     const sprite = new Sprite(texture)
     sprite.anchor.set(0.5)
-    sprite.height = ASTRONAUT_HEIGHT * ASTRONAUT_SIZE_SCALE
-    sprite.width = ASTRONAUT_WIDTH * ASTRONAUT_SIZE_SCALE
+    sprite.height = ASTRONAUT_HEIGHT
+    sprite.width = ASTRONAUT_WIDTH
     sprite.x = pos.x
     sprite.y = pos.y
     sprite.alpha = 0
     sprite.eventMode = 'static'
     sprite.cursor = 'pointer'
     sprite.label = `Astronaut: ${astronaut.name}`
+    // sprite.scale = ASTRONAUT_SIZE_SCALE
 
     return sprite
 }
