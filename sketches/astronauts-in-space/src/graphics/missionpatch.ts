@@ -8,8 +8,7 @@ const MISSION_PATCH_SIZE = 128 // px
 const MISSION_PATCH_FADE_DURATION = 0.5 // seconds
 const MISSION_PATCH_URLS = {
     ISS: '/astronauts/assets/mission-patch-ISS.png',
-    // Temporarily using the same mission patch until I make one for Tiangong
-    TIANGONG: '/astronauts/assets/mission-patch-ISS.png',
+    TIANGONG: '/astronauts/assets/mission-patch-tiangong.png',
 }
 
 export interface MissionPatchGraphic {
