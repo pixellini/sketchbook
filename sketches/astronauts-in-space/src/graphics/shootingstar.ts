@@ -1,7 +1,7 @@
 import { Container, Graphics } from 'pixi.js'
 import { gsap } from 'gsap'
 import { createRandomPosition } from '@pixellini/pixi-utils'
-import { COLORS } from '../constants/colors.ts'
+import { COLORS } from '../constants/shared.ts'
 
 const STAR_SIZE = 2
 const TRAIL_SIZE = 1
@@ -18,7 +18,7 @@ export function createShootingStar() {
 
     const travelDistance = gsap.utils.random(TRAVEL_DISTANCES)
 
-    const container = new Container({ height: STAR_SIZE, width: travelDistance })
+    const container = new Container({ height: STAR_SIZE, width: travelDistance, label: 'Shooting Star' })
     container.pivot.set(container.width / 2, container.height / 2)
     container.rotation = Math.random() * Math.PI * 2
     container.position.set(pos.x, pos.y)

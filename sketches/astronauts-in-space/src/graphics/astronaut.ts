@@ -1,6 +1,7 @@
-import { Assets, Sprite } from 'pixi.js'
+import { Assets, Sprite, Text, Container, Graphics, ContainerChild } from 'pixi.js'
 import { gsap } from 'gsap'
 import { createCenterPosition } from '@pixellini/pixi-utils'
+import { COLORS, SPACE_STATIONS } from '../constants/shared.ts'
 
 /**
  * Data from the astronaut API.
@@ -13,45 +14,56 @@ export interface Astronaut {
 /**
  * Animated astronaut sprite with orbit behavior.
  */
-export interface AstronautSprite {
+export interface AstronautGraphic {
+    container: Container<ContainerChild>,
     sprite: Sprite,
     enterAnimation: (angle: number, delay: number) => gsap.core.Timeline
     animate: () => void
 }
 
-const ORBIT_SPEED = 1
+const ORBIT_SPEED = 1 // 2 minutes for one orbit if the orbit speed is 1
+const ORBIT_SIZE = 200
 const ASTRONAUT_HEIGHT = 36 // px
 const ASTRONAUT_WIDTH = 18 // px
 const ASTRONAUT_SIZE_SCALE = 1
-const ASTRONAUT_SPRITE_URL = '/astronauts/assets/astronaut.png'
+const ASTRONAUT_SPRITE_URL_ISS = '/astronauts/assets/astronaut.png'
 // TODO: Different sprite for each space station.
 const CRAFTS: { [key: string]: string } = {
-    'ISS': ASTRONAUT_SPRITE_URL,
-    'Tiangong': ASTRONAUT_SPRITE_URL
+    'ISS': ASTRONAUT_SPRITE_URL_ISS,
+    'Tiangong': ASTRONAUT_SPRITE_URL_ISS
+}
+
+async function getTexture(craft: string) {
+    const astronautImage = CRAFTS[craft] || ASTRONAUT_SPRITE_URL_ISS
+    return await Assets.load(astronautImage)
+}
+
+async function createAstronautGraphic(astronaut: Astronaut) {
+    const texture = await getTexture(astronaut.craft)
+    const pos = createCenterPosition()
+    const sprite = new Sprite(texture)
+    sprite.anchor.set(0.5)
+    sprite.height = ASTRONAUT_HEIGHT * ASTRONAUT_SIZE_SCALE
+    sprite.width = ASTRONAUT_WIDTH * ASTRONAUT_SIZE_SCALE
+    sprite.x = pos.x
+    sprite.y = pos.y
+    sprite.alpha = 0
+    sprite.eventMode = 'static'
+    sprite.cursor = 'pointer'
+    sprite.label = `Astronaut: ${astronaut.name}`
+
+    return sprite
 }
 
 /**
  * Creates an astronaut sprite that orbits around the center of the viewport.
  */
-export async function createAstronaut({ craft }: Astronaut): Promise<AstronautSprite> {
-    const texture = await getTexture(craft)
-    const pos = createCenterPosition()
+export async function createAstronaut(astronaut: Astronaut): Promise<AstronautGraphic> {
+    const container = new Container({ label: 'Astronaut' })
+    const sprite = await createAstronautGraphic(astronaut)
 
-    const sprite = new Sprite(texture)
-    sprite.anchor.set(0.5)
-    sprite.height = ASTRONAUT_HEIGHT * ASTRONAUT_SIZE_SCALE
-    sprite.width = ASTRONAUT_WIDTH * ASTRONAUT_SIZE_SCALE
-    sprite.zIndex = 400
-    sprite.x = pos.x
-    sprite.y = pos.y
-    sprite.alpha = 0
+    container.addChild(sprite)
 
-    async function getTexture(craft: string) {
-        const astronautImage = CRAFTS[craft] || ASTRONAUT_SPRITE_URL
-        return await Assets.load(astronautImage)
-    }
-
-    const radius = 200
     const base = createCenterPosition()
     const state = { angle: 0 }
     const tl = gsap.timeline()
@@ -60,8 +72,8 @@ export async function createAstronaut({ craft }: Astronaut): Promise<AstronautSp
         state.angle = angle
         return tl
         .to(sprite, {
-            x: base.x + Math.cos(state.angle) * radius,
-            y: base.y + Math.sin(state.angle) * radius,
+            x: base.x + Math.cos(state.angle) * ORBIT_SIZE,
+            y: base.y + Math.sin(state.angle) * ORBIT_SIZE,
             duration: 3,
         })
         .to(sprite, {
@@ -73,22 +85,20 @@ export async function createAstronaut({ craft }: Astronaut): Promise<AstronautSp
     function animate() {
         gsap.to(state, {
             angle: state.angle + Math.PI * 2,
-            duration: 120 / ORBIT_SPEED, // 2 minutes if orbit speed is 1
+            duration: 120 / ORBIT_SPEED,
             ease: 'none',
             repeat: -1,
             onUpdate: () => {
-                const x = base.x + Math.cos(state.angle) * radius
-                const y = base.y + Math.sin(state.angle) * radius
-
                 gsap.set(sprite, {
-                    x: x,
-                    y: y
-                });
+                    x: base.x + Math.cos(state.angle) * ORBIT_SIZE,
+                    y: base.y + Math.sin(state.angle) * ORBIT_SIZE
+                })
             }
         })
     }
 
     return {
+        container,
         sprite,
         enterAnimation,
         animate

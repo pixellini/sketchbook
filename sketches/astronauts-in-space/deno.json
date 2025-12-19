@@ -1,4 +1,5 @@
 {
+    "version": "1.0.0",
     "compilerOptions": {
         "lib": ["dom", "dom.iterable", "es2020"]
     },

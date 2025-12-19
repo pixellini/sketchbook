@@ -9,6 +9,7 @@ const EARTH_SPRITE_URL = '/astronauts/assets/earth.png'
 export async function createEarth() {
     const texture = await Assets.load(EARTH_SPRITE_URL)
     const sprite = new Sprite(texture)
+    sprite.label = 'Earth'
     sprite.zIndex = 200
     sprite.anchor.set(0.5)
     sprite.position.set(globalThis.innerWidth / 2, globalThis.innerHeight / 2)

@@ -48,7 +48,7 @@ export interface ParallaxScene {
  * Builds a single parallax layer with easing behaviour based on the provided config.
  */
 function createParallaxLayer(config: ParallaxLayerConfig) {
-    const container = new Container()
+    const container = new Container({ label: 'Parallax Layer' })
     const target = createPosition()
 
     function add(child: ContainerChild) {

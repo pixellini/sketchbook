@@ -1,3 +1,5 @@
+import { SPACE_STATIONS } from '../constants/shared.ts'
+
 /**
  * Response structure from the astronaut API.
  */
@@ -5,8 +7,8 @@ interface AstronautApi {
     message: string,
     number: number,
     people: {
-        name: string,
-        craft: string
+        Name: string,
+        Craft: typeof SPACE_STATIONS[keyof typeof SPACE_STATIONS]
     }[]
 }
 

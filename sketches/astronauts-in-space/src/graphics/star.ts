@@ -3,7 +3,7 @@ import { gsap } from 'gsap'
 import { spriteFadeInWithDelay } from '../utils/animations.ts'
 import { random } from '@pixellini/math'
 import { createPosition } from '@pixellini/pixi-utils'
-import { COLORS } from '../constants/colors.ts'
+import { COLORS } from '../constants/shared.ts'
 
 const STAR_COLORS = [
     COLORS.WHITE,
@@ -13,7 +13,7 @@ const STAR_COLORS = [
     COLORS.PINK
 ]
 
-enum Size {
+enum StarSize {
     Small,
     Medium,
     Large
@@ -30,7 +30,7 @@ export function createStar() {
     const size = getSize()
     const colour = gsap.utils.random(STAR_COLORS)
 
-    const sprite = new Graphics()
+    const sprite = new Graphics({ label: 'Star' })
         .rect(-size / 2, -size / 2, size, size)
         .fill(colour)
     sprite.rotation = Math.random()
@@ -43,11 +43,11 @@ export function createStar() {
     function getSize() {
         const rand = Math.random()
         if (rand < 0.65) {
-            return Size.Small
+            return StarSize.Small
         } else if (rand < 0.90) {
-            return Size.Medium
+            return StarSize.Medium
         } else {
-            return Size.Large
+            return StarSize.Large
         }
     }
 
