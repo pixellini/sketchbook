@@ -22,9 +22,10 @@ export interface AstronautGraphic {
 }
 
 const ORBIT_SPEED = 1 // 2 minutes for one orbit
-const ORBIT_SIZE = 225
+const ORBIT_SIZE = 200
 const ASTRONAUT_HEIGHT = 64 // px
 const ASTRONAUT_WIDTH = 38 // px
+const ASTRONAUT_SIZE_SCALE = 0.8
 const ASTRONAUT_SUIT: { [key: string]: string } = {
     ISS: '/astronauts/assets/astronaut-iss.png',
     Tiangong: '/astronauts/assets/astronaut-tiangong.png'
@@ -40,15 +41,14 @@ async function createAstronautGraphic(astronaut: Astronaut) {
     const pos = createCenterPosition()
     const sprite = new Sprite(texture)
     sprite.anchor.set(0.5)
-    sprite.height = ASTRONAUT_HEIGHT
-    sprite.width = ASTRONAUT_WIDTH
+    sprite.height = ASTRONAUT_HEIGHT * ASTRONAUT_SIZE_SCALE
+    sprite.width = ASTRONAUT_WIDTH * ASTRONAUT_SIZE_SCALE
     sprite.x = pos.x
     sprite.y = pos.y
     sprite.alpha = 0
     sprite.eventMode = 'static'
     sprite.cursor = 'pointer'
     sprite.label = `Astronaut: ${astronaut.name}`
-    // sprite.scale = ASTRONAUT_SIZE_SCALE
 
     return sprite
 }

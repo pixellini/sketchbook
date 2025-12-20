@@ -13,7 +13,7 @@ export async function createEarth() {
     sprite.zIndex = 200
     sprite.anchor.set(0.5)
     sprite.position.set(globalThis.innerWidth / 2, globalThis.innerHeight / 2)
-    sprite.scale.set(0.3)
+    sprite.scale.set(0.25)
 
     spriteFadeIn(sprite)
 
