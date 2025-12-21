@@ -7,7 +7,9 @@
         "dev": "deno run -A --node-modules-dir=auto npm:vite",
         "build": "deno run -A --node-modules-dir=auto npm:vite build",
         "serve": "deno run -A --node-modules-dir=auto npm:vite preview",
-        "lint": "deno lint"
+        "lint": "deno lint",
+        "create-astronaut-sprite:iss": "aseprite -b ./design/astronauts.aseprite --scale 8 --sheet ./public/assets/spritesheets/astronaut-iss-spritesheet.png --data ./public/assets/spritesheets/astronaut-iss-spritesheet.json --format json",
+        "create-astronaut-sprite:tiangong": "aseprite -b ./design/astronauts.aseprite --scale 8 --sheet ./public/assets/spritesheets/astronaut-tiangong-spritesheet.png --data ./public/assets/spritesheets/astronaut-tiangong-spritesheet.json --format json"
     },
     "lint": {
         "include": ["src/"],

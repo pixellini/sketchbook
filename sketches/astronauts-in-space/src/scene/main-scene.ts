@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { Application, Graphics, FillGradient, TextStyle } from 'pixi.js'
+import { Application, Renderer, Graphics, FillGradient, TextStyle } from 'pixi.js'
 import { gsap } from 'gsap'
 import { createParallaxEffect, ParallaxScene } from '@pixellini/pixi-utils'
 import { fetchAstronauts } from '../api/astronauts.ts'
@@ -12,7 +12,6 @@ import { COLORS } from '../constants/shared.ts'
 // import { createSpaceStations } from '../graphics/spacestation.ts'
 
 const STAR_DENSITY = 10 // this is a nicer number to change
-const FONT_FAMILY = 'Tiny5' // https://fonts.google.com/specimen/Tiny5
 
 /**
  * Recursively spawns shooting stars with random delays.
@@ -31,15 +30,16 @@ function runShootingStars(app: Application, parallax: ParallaxScene) {
 }
 
 /**
- * Initialises and runs the main astronaut scene with parallax effects.
+ * Wait for font to load before initialising,
+ * then set the default font family for all text.
  */
-export async function mainScene() {
-    // Wait for font to load before initializing
+const FONT_FAMILY = 'Tiny5' // https://fonts.google.com/specimen/Tiny5
+async function setDefaultFont() {
     await document.fonts.load(`16px ${FONT_FAMILY}`)
-    
-    // Set default font family for all text
     TextStyle.defaultTextStyle.fontFamily = FONT_FAMILY
-    
+}
+
+async function createScene(): Promise<Application<Renderer>> {
     const app = new Application()
     await app.init({
         background: COLORS.SPACE_DARK,
@@ -77,6 +77,10 @@ export async function mainScene() {
         .getElementById('pixi-container')!
         .appendChild(app.canvas)
 
+    return app
+}
+
+function createSceneParallax(app: Application) {
     const parallax = createParallaxEffect({
         layers: [
             // Stars
@@ -93,6 +97,17 @@ export async function mainScene() {
         app.stage.addChild(layer.container)
     })
 
+    return parallax
+}
+
+/**
+ * Initialises and runs the main astronaut scene with parallax effects.
+ */
+export async function mainScene() {
+    await setDefaultFont()
+    const app = await createScene()
+    const parallax = createSceneParallax(app) 
+    
     const starCount = Math.round((globalThis.innerHeight * globalThis.innerWidth * (STAR_DENSITY / 3000)))
     for (let i = 0; i < starCount; i++) {
         const star = await createStar()
@@ -110,11 +125,11 @@ export async function mainScene() {
     // })
 
     const astronauts = await fetchAstronauts()
-    const AstronautGraphicList: AstronautGraphic[] = []
+    const astronautGraphicList: AstronautGraphic[] = []
     const astronautTimeline = gsap.timeline({
         paused: true,
         onComplete () {
-            AstronautGraphicList.forEach(astronaut => astronaut.animate())
+            astronautGraphicList.forEach(astronaut => astronaut.animate())
         }
     })
 
@@ -129,12 +144,12 @@ export async function mainScene() {
             
             // Store the original scale for resetting
             const originalScale = astronaut.sprite.scale.x
-            const scaleAmount = 1.75
+            const scaleAmount = 1.8
             const duration = 0.3
 
             // Stagger entrance animations by 0.1s per astronaut.
             astronautTimeline.add(astronaut.enterAnimation(direction, 0), index * 0.1)
-            AstronautGraphicList.push(astronaut)
+            astronautGraphicList.push(astronaut)
 
             parallax.addToLayer(4, astronaut.container)
 
@@ -149,7 +164,10 @@ export async function mainScene() {
                     gsap.to(astronaut.sprite.scale, {
                         x: originalScale,
                         y: originalScale,
-                        duration
+                        duration,
+                        onStart: () => {
+                            astronaut.animations.reset()
+                        }
                     })
                     return
                 }
@@ -165,14 +183,24 @@ export async function mainScene() {
                     gsap.to(currentAstronaut.sprite.scale, {
                         x: prevOriginalScale,
                         y: prevOriginalScale,
-                        duration
+                        duration,
+                        onStart: () => {
+                            currentAstronaut!.animations.reset()
+                        }
                     })
                 }
                 
                 await gsap.to(astronaut.sprite.scale, {
                     x: originalScale * scaleAmount,
                     y: originalScale * scaleAmount,
-                    duration
+                    duration,
+                    onStart: () => {
+                        async function run () {
+                            await astronaut.animations.greet()
+                            await astronaut.animations.wave()
+                        }
+                        run()
+                    }
                 })
                 
                 currentMissionPatch = await createMissionPatch(details)

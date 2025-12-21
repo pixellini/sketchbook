@@ -1,4 +1,4 @@
-import { Assets, Sprite, Text, Container, Graphics, ContainerChild } from 'pixi.js'
+import { Assets, Sprite, Text, Container, AnimatedSprite, Spritesheet, ContainerChild, Texture } from 'pixi.js'
 import { gsap } from 'gsap'
 import { createCenterPosition } from '@pixellini/pixi-utils'
 import { COLORS, SPACE_STATIONS } from '../constants/shared.ts'
@@ -16,41 +16,46 @@ export interface Astronaut {
  */
 export interface AstronautGraphic {
     container: Container<ContainerChild>,
-    sprite: Sprite,
+    sprite: AnimatedSprite,
     enterAnimation: (angle: number, delay: number) => gsap.core.Timeline
     animate: () => void
+    animations: {
+        wave: (repeat?: number) => Promise<unknown>
+        greet: () => Promise<unknown>
+        reset: () => Promise<unknown>
+    }
 }
 
 const ORBIT_SPEED = 1 // 2 minutes for one orbit
 const ORBIT_SIZE = 200
-const ASTRONAUT_HEIGHT = 64 // px
-const ASTRONAUT_WIDTH = 38 // px
-const ASTRONAUT_SIZE_SCALE = 0.8
-const ASTRONAUT_SUIT: { [key: string]: string } = {
-    ISS: '/astronauts/assets/astronaut-iss.png',
-    Tiangong: '/astronauts/assets/astronaut-tiangong.png'
+const ASTRONAUT_SIZE_SCALE = 0.175
+const ASTRONAUT_SPRITESHEET: { [key: string]: string } = {
+    ISS: 'astronaut-iss-spritesheet',
+    Tiangong: 'astronaut-tiangong-spritesheet'
 }
 
-async function getTexture(craft: string) {
-    const astronautImage = ASTRONAUT_SUIT[craft] || ASTRONAUT_SUIT.ISS
-    return await Assets.load(astronautImage)
-}
-
-async function createAstronautGraphic(astronaut: Astronaut) {
-    const texture = await getTexture(astronaut.craft)
+/**
+ * Create an animated sprite from spritesheet frames
+ */
+async function createAnimatedAstronautSprite(astronaut: Astronaut) {
+    const type = ASTRONAUT_SPRITESHEET[astronaut.craft] || ASTRONAUT_SPRITESHEET.ISS
+    
+    const spritesheet = await Assets.load<Spritesheet>(`/astronauts/assets/spritesheets/${type}.json`)
+    
+    const sprite = AnimatedSprite.fromFrames(['astronauts 0.aseprite'])
+    
     const pos = createCenterPosition()
-    const sprite = new Sprite(texture)
     sprite.anchor.set(0.5)
-    sprite.height = ASTRONAUT_HEIGHT * ASTRONAUT_SIZE_SCALE
-    sprite.width = ASTRONAUT_WIDTH * ASTRONAUT_SIZE_SCALE
+    sprite.scale.set(ASTRONAUT_SIZE_SCALE)
     sprite.x = pos.x
     sprite.y = pos.y
     sprite.alpha = 0
+    sprite.animationSpeed = 1 / 3
     sprite.eventMode = 'static'
     sprite.cursor = 'pointer'
     sprite.label = `Astronaut: ${astronaut.name}`
-
-    return sprite
+    
+    return { sprite, spritesheet }
 }
 
 /**
@@ -58,7 +63,7 @@ async function createAstronautGraphic(astronaut: Astronaut) {
  */
 export async function createAstronaut(astronaut: Astronaut): Promise<AstronautGraphic> {
     const container = new Container({ label: 'Astronaut' })
-    const sprite = await createAstronautGraphic(astronaut)
+    const { sprite, spritesheet } = await createAnimatedAstronautSprite(astronaut)
 
     container.addChild(sprite)
 
@@ -95,10 +100,66 @@ export async function createAstronaut(astronaut: Astronaut): Promise<AstronautGr
         })
     }
 
+    const animations = {
+        greet: () => {
+            return new Promise((res) => {
+                const frames: string[] = []
+                for (let i = 0; i <= 8; i++) {
+                    frames.push(`astronauts ${i}.aseprite`)
+                }
+                sprite.textures = frames.map(name => spritesheet.textures[name])
+                sprite.loop = false
+                sprite.animationSpeed = 1 / 2
+                sprite.gotoAndPlay(0)
+                sprite.onComplete = () => {
+                    res(null)
+                }
+            })
+        },
+        wave: (repeat: number = 2) => {
+            return new Promise((res) => {
+                const frames: string[] = []
+                for (let i = 8; i <= 13; i++) {
+                    frames.push(`astronauts ${i}.aseprite`)
+                }
+                let playCount = 0
+                sprite.textures = frames.map(name => spritesheet.textures[name])
+                sprite.animationSpeed = 1 / 3
+                sprite.loop = false
+                
+                sprite.onComplete = () => {
+                    playCount++
+                    if (playCount < repeat) {
+                        sprite.gotoAndPlay(0)
+                        res(null)
+                    }
+                }
+                
+                sprite.gotoAndPlay(0)
+            })
+        },
+        reset: () => {
+            return new Promise((res) => {
+                const frames: string[] = []
+                for (let i = 8; i >= 0; i--) {
+                    frames.push(`astronauts ${i}.aseprite`)
+                }
+                sprite.textures = frames.map(name => spritesheet.textures[name])
+                sprite.loop = false
+                sprite.animationSpeed = 1 / 1.5
+                sprite.gotoAndPlay(0)
+                sprite.onComplete = () => {
+                    res(null)
+                }
+            })
+        }
+    }
+
     return {
         container,
         sprite,
         enterAnimation,
-        animate
+        animate,
+        animations
     }
 }
