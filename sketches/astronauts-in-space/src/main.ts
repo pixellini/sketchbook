@@ -1,5 +1,5 @@
 import { gsap } from 'gsap'
-import { mainScene } from './scene/main-scene.ts'
+import { mainScene } from './scene/main.scene.ts'
 
 
 if (globalThis) {
