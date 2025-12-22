@@ -137,7 +137,7 @@ export function createAstronaut(astronaut: Astronaut): AstronautGraphic {
                 }
                 let playCount = 0
                 sprite.textures = frames.map(name => spritesheet.textures[name])
-                sprite.animationSpeed = 1 / 3
+                sprite.animationSpeed = 1 / 2.5
                 sprite.loop = false
                 
                 sprite.onComplete = () => {

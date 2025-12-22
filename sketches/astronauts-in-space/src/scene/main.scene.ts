@@ -31,7 +31,7 @@ const state: State = {
  * Initialises and runs the main astronaut scene with parallax effects.
  */
 export async function mainScene(app: Application<Renderer>) {
-    const scene = createScene(app)
+    createBackground(app)
     const parallax = createSceneParallax(app) 
     
     const starCount = Math.round((globalThis.innerHeight * globalThis.innerWidth * (STAR_DENSITY / 3000)))
@@ -85,7 +85,7 @@ export async function mainScene(app: Application<Renderer>) {
                     state.missionpatch = null
                 }
                 else {
-                    await selectAstronaut(astronaut)
+                    selectAstronaut(astronaut)
                     await showMissionPatch(app, details)
                 }
             })
@@ -103,7 +103,7 @@ export async function mainScene(app: Application<Renderer>) {
     })
 }
 
-function createScene(app: Application<Renderer>) {
+function createBackground(app: Application<Renderer>) {
     const gradient = new FillGradient({
         type: 'radial',
         center: { x: 0.5, y: 0.5 },
@@ -162,21 +162,8 @@ function runShootingStars(app: Application, parallax: ParallaxScene) {
     }, delay)
 }
 
-async function selectAstronaut(astronaut: AstronautGraphic) {
-    // // Reset previous astronaut's scale and scale up new one in parallel.
-    // if (state.astronaut) {
-    //     const prevOriginalScale = state.astronaut.sprite.scale.x / SELECTED_ASTRONAUT_SCALE_AMOUNT
-    //     gsap.to(state.astronaut.sprite.scale, {
-    //         x: prevOriginalScale,
-    //         y: prevOriginalScale,
-    //         duration: SELECTED_ASTRONAUT_TWEEN_DURATION,
-    //         onStart: () => {
-    //             state.astronaut!.animations.reset()
-    //         }
-    //     })
-    // }
-    
-    await gsap.to(astronaut.sprite.scale, {
+function selectAstronaut(astronaut: AstronautGraphic) {
+    gsap.to(astronaut.sprite.scale, {
         x: astronaut.meta.originalScale * SELECTED_ASTRONAUT_SCALE_AMOUNT,
         y: astronaut.meta.originalScale * SELECTED_ASTRONAUT_SCALE_AMOUNT,
         duration: SELECTED_ASTRONAUT_TWEEN_DURATION,
