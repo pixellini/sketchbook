@@ -2,7 +2,7 @@
 import { Application, Renderer, Graphics, FillGradient, TextStyle } from 'pixi.js'
 import { gsap } from 'gsap'
 import { createParallaxEffect, ParallaxScene } from '@pixellini/pixi-utils'
-import { fetchAstronauts } from '../api/astronauts.ts'
+import { AstronautPerson, fetchAstronauts } from '../api/fetch-astronauts.ts'
 import { Astronaut, AstronautGraphic, createAstronaut } from '../graphics/astronaut.ts'
 import { createStar } from '../graphics/star.ts'
 import { createEarth } from '../graphics/earth.ts'
@@ -11,101 +11,27 @@ import { createMissionPatch, MissionPatchGraphic } from '../graphics/missionpatc
 import { COLORS } from '../constants/shared.ts'
 // import { createSpaceStations } from '../graphics/spacestation.ts'
 
-const STAR_DENSITY = 10 // this is a nicer number to change
-
-/**
- * Recursively spawns shooting stars with random delays.
- */
-function runShootingStars(app: Application, parallax: ParallaxScene) {
-    const shootingStar = createShootingStar()
-    const delay = gsap.utils.random(1, 5) * 1000
-    parallax.addToLayer(0, shootingStar.sprite)
-
-    setTimeout(() => {
-        shootingStar.animate(() => {
-            parallax.remove(shootingStar.sprite)
-            runShootingStars(app, parallax)
-        })
-    }, delay)
+// Updates the quantity of stars in the background of the scene.
+const STAR_DENSITY = 10
+// Configures how many shooting star animations run in parallel.
+const SHOOTING_STAR_PARALLELISM = 2
+const SELECTED_ASTRONAUT_SCALE_AMOUNT = 1.8
+const SELECTED_ASTRONAUT_TWEEN_DURATION = 0.3
+// Scene state.
+interface State {
+    missionpatch: MissionPatchGraphic | null
+    astronaut: AstronautGraphic | null
 }
-
-/**
- * Wait for font to load before initialising,
- * then set the default font family for all text.
- */
-const FONT_FAMILY = 'Tiny5' // https://fonts.google.com/specimen/Tiny5
-async function setDefaultFont() {
-    await document.fonts.load(`16px ${FONT_FAMILY}`)
-    TextStyle.defaultTextStyle.fontFamily = FONT_FAMILY
-}
-
-async function createScene(): Promise<Application<Renderer>> {
-    const app = new Application()
-    await app.init({
-        background: COLORS.SPACE_DARK,
-        antialias: true,
-        autoDensity: true,
-        resolution: globalThis.devicePixelRatio || 1,
-        resizeTo: window,
-    })
-
-    const gradient = new FillGradient({
-        type: 'radial',
-        center: { x: 0.5, y: 0.5 },
-        innerRadius: 0,
-        outerCenter: { x: 0.5, y: 0.5 },
-        outerRadius: 0.5,
-        colorStops: [
-            { offset: 0,   color: COLORS.SPACE_GRADIENT_CENTER }, // center
-            { offset: 0.5, color: COLORS.SPACE_GRADIENT_MID }, // mid
-            { offset: 1,   color: COLORS.SPACE_GRADIENT_EDGE }  // edge
-        ],
-        textureSpace: 'local'
-    })
-    
-    const bg = new Graphics();
-    bg.fill(gradient)
-        .rect(0, 0, app.renderer.width, app.renderer.height)
-        .fill()
-
-    app.stage.addChildAt(bg, 0)
-
-    // Stop the default render loop; we'll drive it manually via gsap.ticker.
-    app.stop()
-
-    document
-        .getElementById('pixi-container')!
-        .appendChild(app.canvas)
-
-    return app
-}
-
-function createSceneParallax(app: Application) {
-    const parallax = createParallaxEffect({
-        layers: [
-            // Stars
-            { strength: 0.005, easeFactor: 0.05 },
-            { strength: 0.01, easeFactor: 0.05 },
-            { strength: 0.015, easeFactor: 0.05 },
-            // Earth & Astronauts
-            { strength: 0.04, easeFactor: 0.05 },
-            { strength: 0.05, easeFactor: 0.05 },
-        ]
-    })
-
-    parallax.layers.forEach(layer => {
-        app.stage.addChild(layer.container)
-    })
-
-    return parallax
+const state: State = {
+    missionpatch: null,
+    astronaut: null
 }
 
 /**
  * Initialises and runs the main astronaut scene with parallax effects.
  */
-export async function mainScene() {
-    await setDefaultFont()
-    const app = await createScene()
+export async function mainScene(app: Application<Renderer>) {
+    const scene = await createScene(app)
     const parallax = createSceneParallax(app) 
     
     const starCount = Math.round((globalThis.innerHeight * globalThis.innerWidth * (STAR_DENSITY / 3000)))
@@ -133,19 +59,13 @@ export async function mainScene() {
         }
     })
 
-    let currentMissionPatch: MissionPatchGraphic | null = null
-    let currentAstronaut: AstronautGraphic | null = null
+    // Add the astronauts to the scene.
     if (astronauts) {
         for(const [index, data] of astronauts.entries()) {
             const details: Astronaut = { name: data.Name, craft: data.Craft }
             const astronaut = await createAstronaut(details)
             const step = (Math.PI * 2) / astronauts.length
             const direction = index * step
-            
-            // Store the original scale for resetting
-            const originalScale = astronaut.sprite.scale.x
-            const scaleAmount = 1.8
-            const duration = 0.3
 
             // Stagger entrance animations by 0.1s per astronaut.
             astronautTimeline.add(astronaut.enterAnimation(direction, 0), index * 0.1)
@@ -154,71 +74,145 @@ export async function mainScene() {
             parallax.addToLayer(4, astronaut.container)
 
             astronaut.sprite.on('pointertap', async () => {
-                const isSameAstronaut = currentAstronaut?.sprite.label === astronaut.sprite.label
-                
-                // If clicking the same astronaut, deselect it and hide the mission patch
-                if (isSameAstronaut) {
-                    currentMissionPatch?.destroy()
-                    currentAstronaut = null
-                    currentMissionPatch = null
-                    gsap.to(astronaut.sprite.scale, {
-                        x: originalScale,
-                        y: originalScale,
-                        duration,
-                        onStart: () => {
-                            astronaut.animations.reset()
-                        }
-                    })
-                    return
+                if (state.astronaut) {
+                    deselectAstronaut(state.astronaut)
+                    hideMissionPatch()
                 }
-                
-                // Destroy previous mission patch (don't await - let it run in background)
-                if (currentMissionPatch) {
-                    currentMissionPatch.destroy()
-                }
-                
-                // Reset previous astronaut's scale and scale up new one in parallel
-                if (currentAstronaut) {
-                    const prevOriginalScale = currentAstronaut.sprite.scale.x / scaleAmount
-                    gsap.to(currentAstronaut.sprite.scale, {
-                        x: prevOriginalScale,
-                        y: prevOriginalScale,
-                        duration,
-                        onStart: () => {
-                            currentAstronaut!.animations.reset()
-                        }
-                    })
-                }
-                
-                await gsap.to(astronaut.sprite.scale, {
-                    x: originalScale * scaleAmount,
-                    y: originalScale * scaleAmount,
-                    duration,
-                    onStart: () => {
-                        async function run () {
-                            await astronaut.animations.greet()
-                            await astronaut.animations.wave()
-                        }
-                        run()
-                    }
-                })
-                
-                currentMissionPatch = await createMissionPatch(details)
-                app.stage.addChild(currentMissionPatch.sprite)
-                currentMissionPatch.show()
 
-                currentAstronaut = astronaut
+                // Check if it's the astronaut that's already been selected.
+                if (state.astronaut?.sprite.label === astronaut.sprite.label) {
+                    state.astronaut = null
+                    state.missionpatch = null
+                }
+                else {
+                    await selectAstronaut(astronaut)
+                    await showMissionPatch(app, details)
+                }
             })
         }
     }
 
     astronautTimeline.play()
 
-    runShootingStars(app, parallax)
-    runShootingStars(app, parallax)
+    for (let i = 0; i < SHOOTING_STAR_PARALLELISM; i++) {
+        runShootingStars(app, parallax)
+    }
 
     gsap.ticker.add(() => {
         parallax.update()
-        app.render()
     })
+}
+
+function createScene(app: Application<Renderer>) {
+    const gradient = new FillGradient({
+        type: 'radial',
+        center: { x: 0.5, y: 0.5 },
+        innerRadius: 0,
+        outerCenter: { x: 0.5, y: 0.5 },
+        outerRadius: 0.5,
+        colorStops: [
+            { offset: 0,   color: COLORS.SPACE_GRADIENT_CENTER }, // center
+            { offset: 0.5, color: COLORS.SPACE_GRADIENT_MID }, // mid
+            { offset: 1,   color: COLORS.SPACE_GRADIENT_EDGE }  // edge
+        ],
+        textureSpace: 'local'
+    })
+    
+    const bg = new Graphics();
+    bg.fill(gradient)
+        .rect(0, 0, app.renderer.width, app.renderer.height)
+        .fill()
+
+    app.stage.addChildAt(bg, 0)
+}
+
+function createSceneParallax(app: Application) {
+    const parallax = createParallaxEffect({
+        layers: [
+            // Stars
+            { strength: 0.005, easeFactor: 0.05 },
+            { strength: 0.01, easeFactor: 0.05 },
+            { strength: 0.015, easeFactor: 0.05 },
+            // Earth & Astronauts
+            { strength: 0.04, easeFactor: 0.05 },
+            { strength: 0.05, easeFactor: 0.05 },
+        ]
+    })
+
+    parallax.layers.forEach(layer => {
+        app.stage.addChild(layer.container)
+    })
+
+    return parallax
+}
+
+/**
+ * Recursively spawns shooting stars with random delays.
+ */
+function runShootingStars(app: Application, parallax: ParallaxScene) {
+    const shootingStar = createShootingStar()
+    const delay = gsap.utils.random(1, 5) * 1000
+    parallax.addToLayer(0, shootingStar.sprite)
+
+    setTimeout(() => {
+        shootingStar.animate(() => {
+            parallax.remove(shootingStar.sprite)
+            runShootingStars(app, parallax)
+        })
+    }, delay)
+}
+
+async function selectAstronaut(astronaut: AstronautGraphic) {
+    // // Reset previous astronaut's scale and scale up new one in parallel.
+    // if (state.astronaut) {
+    //     const prevOriginalScale = state.astronaut.sprite.scale.x / SELECTED_ASTRONAUT_SCALE_AMOUNT
+    //     gsap.to(state.astronaut.sprite.scale, {
+    //         x: prevOriginalScale,
+    //         y: prevOriginalScale,
+    //         duration: SELECTED_ASTRONAUT_TWEEN_DURATION,
+    //         onStart: () => {
+    //             state.astronaut!.animations.reset()
+    //         }
+    //     })
+    // }
+    
+    await gsap.to(astronaut.sprite.scale, {
+        x: astronaut.meta.originalScale * SELECTED_ASTRONAUT_SCALE_AMOUNT,
+        y: astronaut.meta.originalScale * SELECTED_ASTRONAUT_SCALE_AMOUNT,
+        duration: SELECTED_ASTRONAUT_TWEEN_DURATION,
+        onStart: () => {
+            // GSAP doesn't allow async/await directly on the lifecycle hook.
+            // This is a workaround to ensure the animations run sequentially.
+            (async function animate () {
+                await astronaut.animations.greet()
+                await astronaut.animations.wave()
+            })()
+        }
+    })
+    state.astronaut = astronaut
+}
+
+function deselectAstronaut(astronaut?: AstronautGraphic | null) {
+    if (!astronaut) return
+
+    gsap.to(astronaut.sprite.scale, {
+        x: astronaut.meta.originalScale,
+        y: astronaut.meta.originalScale,
+        duration: SELECTED_ASTRONAUT_TWEEN_DURATION,
+        onStart: () => {
+            astronaut.animations.reset()
+        }
+    })
+}
+
+async function showMissionPatch(app: Application<Renderer>, astronautDetails: Astronaut) {
+    state.missionpatch = await createMissionPatch(astronautDetails)
+    app.stage.addChild(state.missionpatch.sprite)
+    state.missionpatch.show()
+}
+
+function hideMissionPatch() {
+    if (state.missionpatch) {
+        state.missionpatch.destroy()
+    }
 }

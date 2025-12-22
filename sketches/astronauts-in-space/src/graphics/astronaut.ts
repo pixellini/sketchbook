@@ -17,6 +17,9 @@ export interface Astronaut {
 export interface AstronautGraphic {
     container: Container<ContainerChild>,
     sprite: AnimatedSprite,
+    meta: {
+        originalScale: number
+    }
     enterAnimation: (angle: number, delay: number) => gsap.core.Timeline
     animate: () => void
     animations: {
@@ -55,7 +58,13 @@ async function createAnimatedAstronautSprite(astronaut: Astronaut) {
     sprite.cursor = 'pointer'
     sprite.label = `Astronaut: ${astronaut.name}`
     
-    return { sprite, spritesheet }
+    return { 
+        sprite, 
+        spritesheet,
+        meta: {
+            originalScale: ASTRONAUT_SIZE_SCALE
+        }
+    }
 }
 
 /**
@@ -63,7 +72,7 @@ async function createAnimatedAstronautSprite(astronaut: Astronaut) {
  */
 export async function createAstronaut(astronaut: Astronaut): Promise<AstronautGraphic> {
     const container = new Container({ label: 'Astronaut' })
-    const { sprite, spritesheet } = await createAnimatedAstronautSprite(astronaut)
+    const { sprite, spritesheet, meta } = await createAnimatedAstronautSprite(astronaut)
 
     container.addChild(sprite)
 
@@ -158,6 +167,7 @@ export async function createAstronaut(astronaut: Astronaut): Promise<AstronautGr
     return {
         container,
         sprite,
+        meta,
         enterAnimation,
         animate,
         animations

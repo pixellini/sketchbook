@@ -3,13 +3,15 @@ import { SPACE_STATIONS } from '../constants/shared.ts'
 /**
  * Response structure from the astronaut API.
  */
-interface AstronautApi {
+export interface AstronautApi {
     message: string,
     number: number,
-    people: {
-        Name: string,
-        Craft: typeof SPACE_STATIONS[keyof typeof SPACE_STATIONS]
-    }[]
+    people: AstronautPerson[]
+}
+
+export interface AstronautPerson {
+    Name: string,
+    Craft: typeof SPACE_STATIONS[keyof typeof SPACE_STATIONS]
 }
 
 const ASTRONAUT_DATA_SUB_PATH = 'astronauts/assets/astronauts.json'

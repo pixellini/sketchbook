@@ -16,3 +16,5 @@ An aesthetic visualisation of astronauts currently in space, floating gracefully
 The idea for this sketch sparked when I discovered the [Open Notify API](http://open-notify.org/), which provides real-time data about astronauts currently in space.
 
 It really captivated me knowing people are floating up there right now, and so I thought it deserved a cool visualisation. 
+
+## What I've Learned
