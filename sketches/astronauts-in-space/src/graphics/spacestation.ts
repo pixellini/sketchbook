@@ -1,78 +1,58 @@
 import gsap from 'gsap'
-import { createCenterPosition, createPosition, type Position } from '@pixellini/pixi-utils'
 import { Assets, Sprite } from 'pixi.js'
 
-const ORBIT_RADIUS = 250
-const ORBIT_SPEED = 1
+// The sprite alpha, which gives the illusion of distance.
+const SPRITE_ALPHA = 0.2
+const SPRITE_SIZE = 48
 
 /**
- * Creates all space station sprites that orbit the center.
+ * Creates a single space station sprite.
  */
-export async function createSpaceStations() {
-    const stations = []
-
-    // Temporarily using the astronaut sprite.
-    // TODO: Make a space station sprite for ISS and Tiangong.
-    const ISS = await createStation('ISS', '/astronauts/assets/astronaut.png')
-
-    stations.push(ISS)
-
-    return stations
-}
-
-/**
- * Creates a single orbiting space station sprite.
- */
-export async function createStation(_name: string, texture: string) {
+export async function createStation(name: string, texture: string) {
     const state = {
-        increment: 0
+        clickable: false,
+        selected: false
     }
-
-    const base = createCenterPosition()
-    const pos = createPosition(
-        base.x + Math.cos(state.increment) * ORBIT_RADIUS,
-        base.y + Math.sin(state.increment) * ORBIT_RADIUS
-    )
 
     const image = await Assets.load(texture)
     const sprite = new Sprite(image)
+    sprite.label = 'Space Station: ' + name
     sprite.anchor.set(0.5)
-    sprite.height = 34
-    sprite.width = 24
-    // sprite.zIndex = 400
-    sprite.x = pos.x
-    sprite.y = pos.y
+    sprite.height = SPRITE_SIZE
+    sprite.width = SPRITE_SIZE
+    sprite.x = globalThis.innerWidth * 0.8
+    sprite.y = globalThis.innerHeight * 0.8
     sprite.alpha = 0
+    sprite.zIndex = 1000
+    sprite.eventMode = 'static'
+    sprite.cursor = 'pointer'
 
-    function updateCoords(increment: number): Position {
-        return {
-            x: base.x + Math.cos(increment) * ORBIT_RADIUS,
-            y: base.y + Math.sin(increment) * ORBIT_RADIUS
+    gsap.to(sprite, {
+        alpha: SPRITE_ALPHA,
+        duration: 1,
+        delay: 3,
+        onComplete: () => {
+            state.clickable = true
         }
-    }
+    })
 
-    function animate() {
+    sprite.on('pointertap', () => {
+        if (!state.clickable) {
+            return
+        }
+
+        const size = state.selected ? SPRITE_SIZE : SPRITE_SIZE * 2.5
         gsap.to(sprite, {
-            alpha: 1,
-            duration: 1
+            height: size,
+            width: size,
+            alpha: state.selected ? SPRITE_ALPHA : 1,
+            duration: 2,
+            ease: 'power4.out'
         })
-        
-        const tl = gsap.timeline()
-        tl.to(sprite, {
-            ease: 'none',
-            repeat: -1,
-            onUpdate: () => {
-                state.increment += (ORBIT_SPEED / 1000)
-
-                gsap.set(sprite, updateCoords(state.increment))
-            }
-        })
-
-        tl.progress(Math.random())
-    }
+        state.selected = !state.selected
+    })
 
     return {
         sprite,
-        animate
     }
 }

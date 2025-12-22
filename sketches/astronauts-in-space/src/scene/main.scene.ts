@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { Application, Renderer, Graphics, FillGradient, TextStyle } from 'pixi.js'
+import { Application, Renderer, Graphics, FillGradient, TextStyle, Assets } from 'pixi.js'
 import { gsap } from 'gsap'
 import { createParallaxEffect, ParallaxScene } from '@pixellini/pixi-utils'
 import { AstronautPerson, fetchAstronauts } from '../api/fetch-astronauts.ts'
@@ -9,6 +9,7 @@ import { createEarth } from '../graphics/earth.ts'
 import { createShootingStar } from '../graphics/shootingstar.ts'
 import { createMissionPatch, MissionPatchGraphic } from '../graphics/missionpatch.ts'
 import { COLORS } from '../constants/shared.ts'
+import { createStation } from '../graphics/spacestation.ts'
 // import { createSpaceStations } from '../graphics/spacestation.ts'
 
 // Updates the quantity of stars in the background of the scene.
@@ -43,12 +44,15 @@ export async function mainScene(app: Application<Renderer>) {
     const earth = createEarth()
     parallax.addToLayer(3, earth.sprite)
 
-    // Note: Not going to show the space stations until I've made sprites for them.
-    // const stations = await createSpaceStations()
-    // stations.forEach(station => {
-    //     parallax.addToLayer(3, station.sprite)
-    //     station.animate()
-    // })
+    const iss = await createStation('ISS', 'iss')
+    iss.sprite.x = globalThis.innerWidth * 0.8
+    iss.sprite.y = globalThis.innerHeight * 0.8
+    parallax.addToLayer(1, iss.sprite)
+
+    const tiangong = await createStation('Tiangong', 'iss')
+    parallax.addToLayer(1, tiangong.sprite)
+    tiangong.sprite.x = globalThis.innerWidth * 0.2
+    tiangong.sprite.y = globalThis.innerHeight * 0.2
 
     const astronauts = await fetchAstronauts()
     const astronautGraphicList: AstronautGraphic[] = []

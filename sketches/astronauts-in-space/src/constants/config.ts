@@ -9,6 +9,7 @@ export const MANIFEST = {
                 { alias: 'astronaut-iss', src: `${ASSET_PATH}/spritesheets/astronaut-iss-spritesheet.json` },
                 { alias: 'astronaut-tiangong', src: `${ASSET_PATH}/spritesheets/astronaut-tiangong-spritesheet.json` },
                 { alias: 'earth', src: `${ASSET_PATH}/earth.png` },
+                { alias: 'iss', src: `${ASSET_PATH}/iss.png` },
             ]
         },
         {
