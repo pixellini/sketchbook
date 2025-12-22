@@ -7,6 +7,6 @@ export default defineConfig({
     plugins: [deno()],
     server: {
         port: 8080,
-        open: true,
+        open: false,
     },
 })
