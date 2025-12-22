@@ -8,8 +8,9 @@
         "build": "deno run -A --node-modules-dir=auto npm:vite build",
         "serve": "deno run -A --node-modules-dir=auto npm:vite preview",
         "lint": "deno lint",
-        "create-astronaut-sprite:iss": "aseprite -b ./design/astronauts.aseprite --scale 8 --sheet ./public/assets/spritesheets/astronaut-iss-spritesheet.png --data ./public/assets/spritesheets/astronaut-iss-spritesheet.json --format json",
-        "create-astronaut-sprite:tiangong": "aseprite -b ./design/astronauts.aseprite --scale 8 --sheet ./public/assets/spritesheets/astronaut-tiangong-spritesheet.png --data ./public/assets/spritesheets/astronaut-tiangong-spritesheet.json --format json"
+        "create-spritesheet": "bash scripts/create-spritesheet.sh",
+        "create-spritesheet:iss": "STATION=iss deno task create-spritesheet",
+        "create-spritesheet:tiangong": "STATION=tiangong deno task create-spritesheet"
     },
     "lint": {
         "include": ["src/"],

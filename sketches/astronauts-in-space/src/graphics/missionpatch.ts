@@ -7,7 +7,7 @@ import { type Astronaut } from './astronaut.ts'
 const MISSION_PATCH_SIZE = 128 // px
 const MISSION_PATCH_FADE_DURATION = 0.5 // seconds
 const MISSION_PATCH_URLS = {
-    ISS: '/astronauts/assets/mission-patch-ISS.png',
+    ISS: '/astronauts/assets/mission-patch-iss.png',
     TIANGONG: '/astronauts/assets/mission-patch-tiangong.png',
 }
 
