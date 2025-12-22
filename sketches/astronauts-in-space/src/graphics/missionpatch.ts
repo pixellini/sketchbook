@@ -1,4 +1,4 @@
-import { Assets, Sprite, Text, Container } from 'pixi.js'
+import { Assets, Sprite, Texture, Text, Container } from 'pixi.js'
 import { gsap } from 'gsap'
 import { PADDING_500, PADDING_100, FONT_XL, FONT_LG, PADDING_200 } from '@pixellini/design'
 import { SPACE_STATIONS } from '../constants/shared.ts'
@@ -7,8 +7,8 @@ import { type Astronaut } from './astronaut.ts'
 const MISSION_PATCH_SIZE = 128 // px
 const MISSION_PATCH_FADE_DURATION = 0.5 // seconds
 const MISSION_PATCH_URLS = {
-    ISS: '/astronauts/assets/mission-patch-iss.png',
-    TIANGONG: '/astronauts/assets/mission-patch-tiangong.png',
+    ISS: 'mission-patch-iss',
+    TIANGONG: 'mission-patch-tiangong',
 }
 
 export interface MissionPatchGraphic {
@@ -18,18 +18,18 @@ export interface MissionPatchGraphic {
 }
 
 /**
- * Creates a floating badge that contains the Astronaut's details.
+ * Creates a floating mission patch that contains the Astronaut's details.
  */
 export async function createMissionPatch(astronaut: Astronaut): Promise<MissionPatchGraphic> {
     const container = new Container({ label: 'Mission Patch' })
     const isInternational = astronaut.craft === SPACE_STATIONS.ISS
     const imageUrl = isInternational ? MISSION_PATCH_URLS.ISS : MISSION_PATCH_URLS.TIANGONG
 
-    const texture = await Assets.load(imageUrl)
-    const badge = new Sprite(texture)
-    badge.anchor.set(0, 0)
-    badge.width = MISSION_PATCH_SIZE
-    badge.height = MISSION_PATCH_SIZE
+    const texture = await Assets.load<Texture>(imageUrl)
+    const sprite = new Sprite(texture)
+    sprite.anchor.set(0, 0)
+    sprite.width = MISSION_PATCH_SIZE
+    sprite.height = MISSION_PATCH_SIZE
 
     const nameText = new Text({
         text: astronaut.name,
@@ -51,7 +51,7 @@ export async function createMissionPatch(astronaut: Astronaut): Promise<MissionP
     })
     stationText.position.set(MISSION_PATCH_SIZE + PADDING_500, (MISSION_PATCH_SIZE / 2))
 
-    container.addChild(badge)
+    container.addChild(sprite)
     container.addChild(nameText)
     container.addChild(stationText)
     

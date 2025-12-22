@@ -1,7 +1,0 @@
-{
-    "name": "@pixellini/math",
-    "exports": "./src/index.ts",
-    "compilerOptions": {
-        "lib": ["dom", "dom.iterable", "es2020"]
-    }
-}

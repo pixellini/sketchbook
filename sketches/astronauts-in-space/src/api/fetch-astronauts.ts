@@ -1,3 +1,4 @@
+import { safeFetch } from '@pixellini/utils'
 import { SPACE_STATIONS } from '../constants/shared.ts'
 
 /**
@@ -21,21 +22,20 @@ const ASTRONAUT_DATA_URL = `${import.meta.env.DEV ? 'https://fun.pixellini.com' 
 /**
  * Fetches the list of astronauts currently in space from the API.
  */
-export async function fetchAstronauts() {
-    try {
-        const response = await fetch(ASTRONAUT_DATA_URL)
-        if (!response.ok) {
-            throw new AstronautApiError(
-                `Failed to fetch astronaut data: ${response.statusText}`,
-                response.status
-            )
-        }
-        const data = await response.json() as AstronautApi
-
-        return data?.people
-    } catch (error) {
-        console.log(error)
+export async function fetchAstronauts(): Promise<AstronautPerson[]> {
+    const { data, err } = await safeFetch<AstronautApi, AstronautApiError>(ASTRONAUT_DATA_URL)
+    if (err) {
+        // TODO: Show an error state. Need to think of some ideas...
+        console.error(err)
+        return []
     }
+    
+    if (!data?.people) {
+        console.error('API did not return astronauts')
+        return []
+    }
+
+    return data?.people
 }
 
 /**

@@ -1,7 +1,7 @@
 import { Graphics } from 'pixi.js'
 import { gsap } from 'gsap'
 import { spriteFadeInWithDelay } from '../utils/animations.ts'
-import { random } from '@pixellini/math'
+import { random } from '@pixellini/utils'
 import { createPosition } from '@pixellini/pixi-utils'
 import { COLORS } from '../constants/shared.ts'
 

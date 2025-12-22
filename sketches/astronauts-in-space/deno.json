@@ -9,8 +9,8 @@
         "serve": "deno run -A --node-modules-dir=auto npm:vite preview",
         "lint": "deno lint",
         "create-spritesheet": "bash scripts/create-spritesheet.sh",
-        "create-spritesheet:iss": "STATION=iss deno task create-spritesheet",
-        "create-spritesheet:tiangong": "STATION=tiangong deno task create-spritesheet"
+        "create-spritesheet:iss": "CRAFT=iss deno task create-spritesheet",
+        "create-spritesheet:tiangong": "CRAFT=tiangong deno task create-spritesheet"
     },
     "lint": {
         "include": ["src/"],

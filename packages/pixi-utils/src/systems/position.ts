@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { random } from '@pixellini/math'
+import { random } from '@pixellini/utils'
 
 /**
  * Basic 2D coordinate.

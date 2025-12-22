@@ -31,16 +31,16 @@ const state: State = {
  * Initialises and runs the main astronaut scene with parallax effects.
  */
 export async function mainScene(app: Application<Renderer>) {
-    const scene = await createScene(app)
+    const scene = createScene(app)
     const parallax = createSceneParallax(app) 
     
     const starCount = Math.round((globalThis.innerHeight * globalThis.innerWidth * (STAR_DENSITY / 3000)))
     for (let i = 0; i < starCount; i++) {
-        const star = await createStar()
+        const star = createStar()
         parallax.addToLayer(star.size - 1, star.sprite)
     }
 
-    const earth = await createEarth()
+    const earth = createEarth()
     parallax.addToLayer(3, earth.sprite)
 
     // Note: Not going to show the space stations until I've made sprites for them.
@@ -63,7 +63,7 @@ export async function mainScene(app: Application<Renderer>) {
     if (astronauts) {
         for(const [index, data] of astronauts.entries()) {
             const details: Astronaut = { name: data.Name, craft: data.Craft }
-            const astronaut = await createAstronaut(details)
+            const astronaut = createAstronaut(details)
             const step = (Math.PI * 2) / astronauts.length
             const direction = index * step
 
