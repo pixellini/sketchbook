@@ -1,6 +1,6 @@
 import { Graphics, Sprite } from 'pixi.js'
 import { gsap } from 'gsap'
-import { random } from '@pixellini/utils'
+import { randomInt } from '@pixellini/utils'
 
 export function spriteFadeIn(sprite: Sprite | Graphics, options: { delay?: number } = {}) {
     sprite.alpha = 0
@@ -14,6 +14,6 @@ export function spriteFadeIn(sprite: Sprite | Graphics, options: { delay?: numbe
 
 export function spriteFadeInWithDelay(sprite: Sprite | Graphics) {
     return spriteFadeIn(sprite, { 
-        delay: random(2) 
+        delay: randomInt(2) 
     })
 }

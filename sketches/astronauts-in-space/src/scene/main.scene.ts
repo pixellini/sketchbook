@@ -10,14 +10,27 @@ import { createShootingStar } from '../graphics/shootingstar.ts'
 import { createMissionPatch, MissionPatchGraphic } from '../graphics/missionpatch.ts'
 import { COLORS } from '../constants/shared.ts'
 import { createStation } from '../graphics/spacestation.ts'
-// import { createSpaceStations } from '../graphics/spacestation.ts'
 
 // Updates the quantity of stars in the background of the scene.
-const STAR_DENSITY = 10
+const STAR_DENSITY = 6
 // Configures how many shooting star animations run in parallel.
 const SHOOTING_STAR_PARALLELISM = 2
-const SELECTED_ASTRONAUT_SCALE_AMOUNT = 1.8
+// How large the astronauts will grow when one is selected.
+const SELECTED_ASTRONAUT_SCALE_AMOUNT = 2
+// How quickly the astronaut sprite will scale when selected.
 const SELECTED_ASTRONAUT_TWEEN_DURATION = 0.3
+// Scene layers
+const PARALLAX_LAYERS = [
+    // Stars
+    { strength: 0.6, easeFactor: 5 },
+    { strength: 0.8, easeFactor: 5 },
+    { strength: 1, easeFactor: 5 },
+    // Earth
+    { strength: 4, easeFactor: 5 },
+    // Astronauts
+    { strength: 5, easeFactor: 5 },
+]
+
 // Scene state.
 interface State {
     missionpatch: MissionPatchGraphic | null
@@ -38,7 +51,8 @@ export async function mainScene(app: Application<Renderer>) {
     const starCount = Math.round((globalThis.innerHeight * globalThis.innerWidth * (STAR_DENSITY / 3000)))
     for (let i = 0; i < starCount; i++) {
         const star = createStar()
-        parallax.addToLayer(star.size - 1, star.sprite)
+        console.log('layer', star.size)
+        parallax.addToLayer(star.size, star.sprite)
     }
 
     const earth = createEarth()
@@ -132,15 +146,7 @@ function createBackground(app: Application<Renderer>) {
 
 function createSceneParallax(app: Application) {
     const parallax = createParallaxEffect({
-        layers: [
-            // Stars
-            { strength: 0.005, easeFactor: 0.05 },
-            { strength: 0.01, easeFactor: 0.05 },
-            { strength: 0.015, easeFactor: 0.05 },
-            // Earth & Astronauts
-            { strength: 0.04, easeFactor: 0.05 },
-            { strength: 0.05, easeFactor: 0.05 },
-        ]
+        layers: PARALLAX_LAYERS
     })
 
     parallax.layers.forEach(layer => {

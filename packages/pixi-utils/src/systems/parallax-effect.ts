@@ -50,16 +50,18 @@ export interface ParallaxScene {
 function createParallaxLayer(config: ParallaxLayerConfig) {
     const container = new Container({ label: 'Parallax Layer' })
     const target = createPosition()
+    const strength = config.strength / 100
+    const easeFactor = config.easeFactor / 100
 
     function add(child: ContainerChild) {
         container.addChild(child)
     }
 
     function update(offsetX: number, offsetY: number) {
-        target.x = offsetX * config.strength
-        target.y = offsetY * config.strength
-        container.x += (target.x - container.x) * config.easeFactor
-        container.y += (target.y - container.y) * config.easeFactor
+        target.x = offsetX * strength
+        target.y = offsetY * strength
+        container.x += (target.x - container.x) * easeFactor
+        container.y += (target.y - container.y) * easeFactor
     }
 
     return {

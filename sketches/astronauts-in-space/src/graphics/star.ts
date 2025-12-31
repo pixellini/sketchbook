@@ -1,9 +1,15 @@
 import { Graphics } from 'pixi.js'
 import { gsap } from 'gsap'
 import { spriteFadeInWithDelay } from '../utils/animations.ts'
-import { random } from '@pixellini/utils'
+import { random, randomInt } from '@pixellini/utils'
 import { createPosition } from '@pixellini/pixi-utils'
 import { COLORS } from '../constants/shared.ts'
+
+enum Star {
+    Small,
+    Medium,
+    Large,
+}
 
 const STAR_COLORS = [
     COLORS.WHITE,
@@ -12,11 +18,10 @@ const STAR_COLORS = [
     COLORS.ORANGE,
     COLORS.PINK
 ]
-
-enum StarSize {
-    Small,
-    Medium,
-    Large
+const STAR_SIZES: Record<number, number> = {
+    [Star.Small]: 1,
+    [Star.Medium]: 2,
+    [Star.Large]: 3
 }
 
 /**
@@ -24,15 +29,16 @@ enum StarSize {
  */
 export function createStar() {
     const pos = createPosition(
-        random(globalThis.innerWidth),
-        random(globalThis.innerHeight)
+        randomInt(globalThis.innerWidth),
+        randomInt(globalThis.innerHeight)
     )
     const size = getSize()
+    const dimensions = STAR_SIZES[size]
     const colour = gsap.utils.random(STAR_COLORS)
 
     const sprite = new Graphics({ label: 'Star' })
-        .rect(-size / 2, -size / 2, size, size)
-        .fill(colour)
+    sprite.rect(-dimensions / 2, -dimensions / 2, dimensions, dimensions)
+    sprite.fill(colour)
     sprite.rotation = Math.random()
     sprite.position.set(pos.x, pos.y)
     sprite.zIndex = 100
@@ -41,14 +47,14 @@ export function createStar() {
     animate()
 
     function getSize() {
-        const rand = Math.random()
-        if (rand < 0.65) {
-            return StarSize.Small
-        } else if (rand < 0.90) {
-            return StarSize.Medium
-        } else {
-            return StarSize.Large
+        const choice = random()
+        if (choice <= 0.8) {
+            return Star.Small
         }
+        if (choice <= 0.95) {
+            return Star.Medium
+        }
+        return Star.Large
     }
 
     // Twinkle Animation

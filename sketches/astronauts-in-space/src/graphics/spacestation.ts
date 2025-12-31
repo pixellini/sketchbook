@@ -3,13 +3,15 @@ import { Assets, Sprite } from 'pixi.js'
 
 // The sprite alpha, which gives the illusion of distance.
 const SPRITE_ALPHA = 0.2
-const SPRITE_SIZE = 48
+const SPRITE_SIZE = 36
+const SPRITE_SIZE_SELECTED = SPRITE_SIZE * 3
 
 /**
  * Creates a single space station sprite.
  */
 export async function createStation(name: string, texture: string) {
     const state = {
+        // The click events won't be active until the sprite has fully transitioned into the scene.
         clickable: false,
         selected: false
     }
@@ -20,8 +22,8 @@ export async function createStation(name: string, texture: string) {
     sprite.anchor.set(0.5)
     sprite.height = SPRITE_SIZE
     sprite.width = SPRITE_SIZE
-    sprite.x = globalThis.innerWidth * 0.8
-    sprite.y = globalThis.innerHeight * 0.8
+    sprite.x = globalThis.innerWidth
+    sprite.y = globalThis.innerHeight
     sprite.alpha = 0
     sprite.zIndex = 1000
     sprite.eventMode = 'static'
@@ -41,7 +43,7 @@ export async function createStation(name: string, texture: string) {
             return
         }
 
-        const size = state.selected ? SPRITE_SIZE : SPRITE_SIZE * 2.5
+        const size = state.selected ? SPRITE_SIZE : SPRITE_SIZE_SELECTED
         gsap.to(sprite, {
             height: size,
             width: size,

@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { random } from '@pixellini/utils'
+import { randomInt } from '@pixellini/utils'
 
 /**
  * Basic 2D coordinate.
@@ -43,7 +43,7 @@ export function centerPosition(p: Position) {
  * Creates a position at a random viewport coordinate.
  */
 export function createRandomPosition() {
-    const x = random(globalThis.innerWidth)
-    const y = random(globalThis.innerHeight)
+    const x = randomInt(globalThis.innerWidth)
+    const y = randomInt(globalThis.innerHeight)
     return createPosition(x, y)
 }
