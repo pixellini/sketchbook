@@ -460,15 +460,15 @@
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/components/types.ts": "81b9f2e34390623ec6707aa9fa6a70576047ec4f50bf771c1dc7c6309b5a80b6",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/core/Animator.ts": "8de5f948e39561a26acff09d88f0b0a456c601ebc28b6d78a1c1ebec6ed834b4",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/core/Application.ts": "6233fb32281866b5c7b340364e9e6f6f387daebcba261681ada1223ad1001611",
-    "https://raw.githubusercontent.com/pixellini/stagehand/main/src/core/Entity.ts": "c8ea8ae729dc32a6a102ac619f32a3e5c7bda1d99312e675ff2a7ffd66ef7e29",
-    "https://raw.githubusercontent.com/pixellini/stagehand/main/src/core/Scene.ts": "547c4455973b3a889cbcc7ca5b5d11fd6423158b567a1e7df46c7a85fa7f7d47",
+    "https://raw.githubusercontent.com/pixellini/stagehand/main/src/core/Entity.ts": "b707a83237361a8946d43272a8a7725663585814ec1646f78c14e6555f0ff47b",
+    "https://raw.githubusercontent.com/pixellini/stagehand/main/src/core/Scene.ts": "8ac710727a2b8b1972028b0ac273596593a5ce278f6f8da87b2766a668a96284",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/core/SceneManager.ts": "0dfda8f14217cde65217bc04bc23e00696c61b18c001f91a5e06d117a86ef56e",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/core/SpriteAnimator.ts": "c427a23eedacc67debdbba8e81ea23a106abfa004f6ca89b8697bc2ab8c754fc",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/debugger/DebugBounds.ts": "7711f2ca6144484e452b4e17e21af46d9707bf0a12fc2c6e8a3d005e315087e7",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/debugger/DebugOverlay.ts": "95a871eedac7e8dd07624153d23cd7b231f433448e2f1497af55dfabbd7611a4",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/display/CoverSprite.ts": "0b066ea6e06a3a9d59e95dc922413a122c6576ada372c9a40d9f1a32512c59d2",
-    "https://raw.githubusercontent.com/pixellini/stagehand/main/src/display/ParallaxContainer.ts": "c6fa02b8212e048ebf16e3ab63863fd5e4a59e73d6e2c74e057615aeb32e08a6",
-    "https://raw.githubusercontent.com/pixellini/stagehand/main/src/mod.ts": "7c04864ade94afa386036b357f9d9a26fee9eabc7a1aa7a89ee8ce5801e39c33",
+    "https://raw.githubusercontent.com/pixellini/stagehand/main/src/display/ParallaxContainer.ts": "34cc9ac412b47211c3ab5e1b089b505bfc2f9b451fa319e922dfb72900b24193",
+    "https://raw.githubusercontent.com/pixellini/stagehand/main/src/mod.ts": "40158e2bd8e0df321cadec85a2bd05b9a8fa5495d8296076601d2e602a25512f",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/plugins/Effects.ts": "fdbc8447c1b175fd7b417258a775cd904ed52ff512f8f6581342b0785c1832dd",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/types/Entities.ts": "d6c3879687c03583d36e86f0192b1822355af4e642243f5e55e32e337539507f",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/utils/AssetLoader.ts": "61a7d2caf528a4c8bb7e761172c7e01d8a91fc2efbd9c7e37ffa560d76881f0f",
@@ -477,8 +477,7 @@
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/utils/MouseListener.ts": "cac3833a3c29f3a00c089c5c8084412b9ac020b721d6bb83ac335b406ce6455f",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/utils/SceneUtils.ts": "9fdf9dc580e68475c448d0bf98b2000479b2d9896b15097d28832d12dbc40e64",
     "https://raw.githubusercontent.com/pixellini/stagehand/main/src/utils/Screen.ts": "6920afedf794da75c0342d752aa97931310973c062cd7439b8f9a0c650a8cedd",
-    "https://raw.githubusercontent.com/pixellini/stagehand/main/src/utils/Time.ts": "a9bee93ab8fb1b79e5e1fe4f4cbaf976f3b531d262a912b26e1e527951bb90fd",
-    "https://raw.githubusercontent.com/pixellini/stagehand/main/src/utils/types.ts": "cf48e35dd543f9a29fa02c82db247cb61a2aa47769b064ee9f2d970e68e73454"
+    "https://raw.githubusercontent.com/pixellini/stagehand/main/src/utils/Time.ts": "a9bee93ab8fb1b79e5e1fe4f4cbaf976f3b531d262a912b26e1e527951bb90fd"
   },
   "workspace": {
     "dependencies": [
