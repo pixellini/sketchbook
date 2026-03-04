@@ -10,10 +10,11 @@
         "check": "deno check packages/shared/src/index.ts"
     },
     "imports": {
+        "@pixellini/stagehand": "https://raw.githubusercontent.com/pixellini/stagehand/main/src/mod.ts",
         "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.5",
         "gsap": "npm:gsap@^3.13.0",
         "pixi.js": "npm:pixi.js@^8.8.1",
-        "vite": "npm:vite@^6.2.0",
+        "vite": "npm:vite@^6.2.0"
     },
     "fmt": {
         "useTabs": false,

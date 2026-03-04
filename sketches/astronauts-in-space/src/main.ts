@@ -1,12 +1,7 @@
-import { Application, TextStyle, Assets } from 'pixi.js'
-import { gsap } from 'gsap'
-import { mainScene } from './scene/main.scene.ts'
+import { TextStyle } from 'pixi.js'
+import { PixiApplication, AssetLoader } from '@pixellini/stagehand'
+import { MainScene } from './scene/MainScene.ts'
 import { FONT_FAMILY, MANIFEST } from './constants/config.ts'
-
-if (globalThis) {
-    // @ts-ignore: PixiPlugin is expected to be found on the window object.
-    gsap.registerPlugin(globalThis.PixiPlugin)
-}
 
 /**
  * Wait for font to load before initialising,
@@ -17,36 +12,27 @@ async function setDefaultFont() {
     TextStyle.defaultTextStyle.fontFamily = FONT_FAMILY
 }
 
-async function createApp() {
-    const app = new Application()
+async function main() {
+    await setDefaultFont()
+    await AssetLoader.init(MANIFEST)
+
+    // Load eagerly — can't rely on SceneManager.loadSceneAssets
+    // until the local stagehand changes are pushed to remote.
+    await AssetLoader.loadBundle('start')
+    AssetLoader.backgroundLoadBundle('lazy')
+
+    const app = new PixiApplication()
     await app.init({
-        // background: COLORS.SPACE_DARK,
-        antialias: true,
-        autoDensity: true,
-        resolution: globalThis.devicePixelRatio || 1,
+        debug: 0,
+        // debugGrid: true,
         resizeTo: window,
+        backgroundAlpha: 0,
+        antialias: true,
+        resolution: Math.min(globalThis.devicePixelRatio, 2),
+        autoDensity: true
     })
 
-    // Stop the default render loop; we'll drive it manually via gsap.ticker.
-    app.stop()
-    gsap.ticker.add(() => {
-        app.render()
-    })
-
-    document
-        .getElementById('pixi-container')!
-        .appendChild(app.canvas)
-
-    return app
+    app.play(new MainScene())
 }
 
-(async () => {
-    await setDefaultFont()
-    await Assets.init({ manifest: MANIFEST })
-
-    await Assets.loadBundle('start')
-    Assets.backgroundLoadBundle('lazy')
-    
-    const app = await createApp()
-    await mainScene(app)
-})()
+main()

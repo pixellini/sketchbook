@@ -17,6 +17,8 @@ export const COLORS = {
     SPACE_DARK: '#0a081c',
     SPACE_GRADIENT_CENTER: '#0a1028ff',
     SPACE_GRADIENT_MID: '#0f0c29ff',
+    SPACE_GRADIENT_MID2: 'rgb(16, 11, 38)',
+    SPACE_GRADIENT_MID3: 'rgb(12, 5, 28)',
     SPACE_GRADIENT_EDGE: '#06050dff',
 } as const
 

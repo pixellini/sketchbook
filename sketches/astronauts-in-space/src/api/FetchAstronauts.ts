@@ -1,41 +1,46 @@
 import { safeFetch } from '@pixellini/utils'
 import { SPACE_STATIONS } from '../constants/shared.ts'
 
+export type Craft = typeof SPACE_STATIONS[keyof typeof SPACE_STATIONS]
+
 /**
  * Response structure from the astronaut API.
  */
 export interface AstronautApi {
     message: string,
     number: number,
-    people: AstronautPerson[]
+    people: AstronautPersonRaw[]
+}
+
+export interface AstronautPersonRaw {
+    Name: string,
+    Craft: Craft
 }
 
 export interface AstronautPerson {
-    Name: string,
-    Craft: typeof SPACE_STATIONS[keyof typeof SPACE_STATIONS]
+    name: string,
+    craft: Craft
 }
 
-const ASTRONAUT_DATA_SUB_PATH = 'astronauts/assets/astronauts.json'
-// Dev mode fetches from CDN, and production uses relative path.
-const ASTRONAUT_DATA_URL = `${import.meta.env.DEV ? 'https://fun.pixellini.com' : ''}/${ASTRONAUT_DATA_SUB_PATH}`
+const ASTRONAUTS_DATA_URL = '/astronauts/assets/astronauts.json'
 
 /**
  * Fetches the list of astronauts currently in space from the API.
  */
 export async function fetchAstronauts(): Promise<AstronautPerson[]> {
-    const { data, err } = await safeFetch<AstronautApi, AstronautApiError>(ASTRONAUT_DATA_URL)
+    const { data, err } = await safeFetch<AstronautApi, AstronautApiError>(ASTRONAUTS_DATA_URL)
     if (err) {
         // TODO: Show an error state. Need to think of some ideas...
         console.error(err)
         return []
     }
     
-    if (!data?.people) {
+    if (!data?.people || data.people.length === 0) {
         console.error('API did not return astronauts')
         return []
     }
 
-    return data?.people
+    return data?.people.map(a => ({ name: a.Name, craft: a.Craft }))
 }
 
 /**
